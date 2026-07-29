@@ -4,13 +4,17 @@
 
 #ifndef RISC_V_TOMASULO_CPU_SIMULATOR_CPU_H
 #define RISC_V_TOMASULO_CPU_SIMULATOR_CPU_H
+#include <iostream>
 #include "Memory.h"
 #include "Decoder.h"
 #include "RegFile.h"
 #include "ALU.h"
 #include "PC.h"
-class CPU {
+class NaiveCPU {
 public:
+    NaiveCPU(Memory mem) {
+        memory = mem;
+    }
     bool Tick();
 private:
     PC pc;

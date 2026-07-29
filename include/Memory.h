@@ -3,8 +3,10 @@
 //
 #ifndef RISC_V_TOMASULO_CPU_SIMULATOR_MEMORY_H
 #define RISC_V_TOMASULO_CPU_SIMULATOR_MEMORY_H
-#include<cstdint>
-const long long MAXN = 1e5 + 5;
+#include <cstdint>
+#include <iostream>
+#include "Decoder.h"
+const int MAXN = 1e6 + 5;
 class Memory {
 public:
     Memory() {
@@ -14,17 +16,17 @@ public:
         }
     }
     void Load();
-    uint8_t GetBinaryIns(const int addr) const {
+    uint8_t GetBinaryIns(const uint32_t addr) const {
         return instructions[addr];
     }
-    void GetData();
+    uint32_t AccessData(InsType type,uint32_t cont,uint32_t addr);
 private:
     uint8_t instructions[MAXN]{}; // 指令
-    int data[MAXN]{}; // 数据
+    uint8_t data[MAXN]{}; // 数据
     static int AddressToIndex(const char *addr) {
         int index = 0,digit = 0;
         for (int i = 7; i >= 0; i--) {
-            index += addr[i] * (1 << (digit * 4));
+            index += (addr[i] - '0') * (1 << (digit * 4));
             digit++;
         }
         return index;

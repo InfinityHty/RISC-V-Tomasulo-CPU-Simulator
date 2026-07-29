@@ -5,7 +5,13 @@
 Assembly Decoder::Decode(const uint8_t *binary_ins) {
     Assembly as;
     const uint32_t ins = binary_ins[0] + (binary_ins[1] << 8) + (binary_ins[2] << 16) + (binary_ins[3] << 24);
+    std::cerr << std::hex << "ins: 0x" << ins << '\n';
     uint8_t Opcode = ins & 0x7F;
+    if (ins == 0x0FF00513) {
+        as.quit = true;
+        as.rs1 = 10; // a0
+        return as;
+    }
     switch (Opcode) {
         case 0b0110011: {
             // R Type
@@ -89,9 +95,11 @@ Assembly Decoder::Decode(const uint8_t *binary_ins) {
             as.rd = (ins & 0xF80) >> 7;
             as.rs1 = (ins & 0xF8000) >> 15;
             if (is_I) {
-                as.imm = static_cast<int>(ins >> 20);
+                // 符号扩展
+                as.imm = static_cast<int>((ins >> 20) << 20) >> 20;
             }
             else {
+                // 不做符号扩展
                 as.imm = static_cast<int>(ins >> 20 & 0x1F);
             }
             break;
@@ -116,7 +124,8 @@ Assembly Decoder::Decode(const uint8_t *binary_ins) {
             }
             as.rd = (ins & 0xF80) >> 7;
             as.rs1 = (ins & 0xF8000) >> 15;
-            as.imm = static_cast<int>(ins >> 20);
+            // 扩展
+            as.imm = static_cast<int>((ins >> 20) << 20) >> 20;
             break;
         }
         case 0b0100011: {
@@ -133,7 +142,9 @@ Assembly Decoder::Decode(const uint8_t *binary_ins) {
             }
             as.rs1 = (ins & 0xF8000) >> 15;
             as.rs2 = (ins & 0x1F00000) >> 20;
-            as.imm = static_cast<int>(((ins >> 25) << 5) + (ins >> 7) & 0x1F);
+            // 扩展
+            as.imm = static_cast<int>((((ins >> 25) << 5) + (ins >> 7) & 0x1F) << 20) >> 20;
+            // as.has_imm = true;
             break;
         }
         case 0b1100011: {
@@ -159,14 +170,16 @@ Assembly Decoder::Decode(const uint8_t *binary_ins) {
             }
             as.rs1 = (ins & 0xF8000) >> 15;
             as.rs2 = (ins & 0x1F00000) >> 20;
-            as.imm = static_cast<int>((((ins >> 8) & 0xF) + (((ins >> 25) & 0x3F) << 4) + (((ins >> 7) & 1) << 10) + ((ins >> 31) << 11)) << 1);
+            // 32位扩展
+            as.imm = static_cast<int>((((ins >> 8) & 0xF) + (((ins >> 25) & 0x3F) << 4) + (((ins >> 7) & 1) << 10) + ((ins >> 31) << 11)) << 20) >> 19;
             break;
         }
         case 0b1101111: {
             // J指令
             as.type = jal;
             as.rd = (ins & 0xF80) >> 7;
-            as.imm = static_cast<int>(((ins >> 21 & 0x3FF) + ((ins >> 20 & 1) << 10) + ((ins >> 12 & 0xFF) << 11) + ((ins >> 31) << 19)) << 1);
+            // 做一个32位扩展 正数在前面补0 负数补1
+            as.imm = (static_cast<int>(((ins >> 21 & 0x3FF) + ((ins >> 20 & 1) << 10) + ((ins >> 12 & 0xFF) << 11) + ((ins >> 31) << 19)) << 12)) >> 11;
             break;
         }
         case 0b1100111: {
@@ -177,21 +190,22 @@ Assembly Decoder::Decode(const uint8_t *binary_ins) {
             }
             as.rd = (ins & 0xF80) >> 7;
             as.rs1 = (ins & 0xF8000) >> 15;
-            as.imm = static_cast<int>(ins >> 20);
+            as.imm = static_cast<int>((ins >> 20) << 20) >> 20;
+            // as.has_imm = true;
             break;
         }
         case 0b0010111: {
             // 第一个U指令
             as.type = auipc;
             as.rd = (ins & 0xF80) >> 7;
-            as.imm = static_cast<int>(ins >> 12);
+            as.imm = (ins >> 12) << 12;
             break;
         }
         case 0b0110111: {
             // 第二个U指令
             as.type = lui;
             as.rd = (ins & 0xF80) >> 7;
-            as.imm = static_cast<int>(ins >> 12);
+            as.imm = (ins >> 12) << 12;
             break;
         }
         case 0b1110011: {
