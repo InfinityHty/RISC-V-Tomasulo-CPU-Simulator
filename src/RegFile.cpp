@@ -1,7 +1,7 @@
 //
 // Created by HTY on 2026/7/28.
 //
-#include "../include/Regfile.h"
+#include "../include/RegFile.h"
 void RegFile::Write(InsType type, const uint8_t des,const uint32_t output,const uint32_t load) {
     if (type == add || type == sub || type == and_ || type == or_
         || type == xor_ || type == sll || type == srl || type == sra
