@@ -8,18 +8,19 @@ add_executable(RISC_V_Tomasulo_CPU_Simulator
         include/Decoder.h
         include/Memory.h
         include/NaiveCPU.h
-        src/NaiveCPU.cpp
         include/PC.h
         include/RegFile.h
+        include/ALU.h
+        include/ROB.h
+        include/CDB.h
+        include/LSQ.h
+        src/NaiveCPU.cpp
         src/Memory.cpp
         src/Decoder.cpp
         src/RegFile.cpp
-        include/ROB.h
         src/ROB.cpp
-        include/CDB.h
         src/CDB.cpp
         src/RS.cpp
-        include/LSQ.h
         src/LSQ.cpp
         src/ALU.cpp
         src/TomasuloCPU.cpp)
