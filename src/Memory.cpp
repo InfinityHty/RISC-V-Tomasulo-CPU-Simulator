@@ -1,7 +1,7 @@
 //
 // Created by HTY on 2026/7/28.
 //
-#include "../include/Memory.h"
+#include "Memory.h"
 #include <iostream>
 void Memory::Load() {
     char line[100];

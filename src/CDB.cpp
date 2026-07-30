@@ -1,7 +1,7 @@
 //
 // Created by HTY on 2026/7/29.
 //
-#include "../include/CDB.h"
+#include "CDB.h"
 void CDB::Broadcast(BroadcastContent &in,RS &rs,ROB &rob) {
     for (int i = 0; i < rs.total; i++) {
         // RS接受Vj/Vk

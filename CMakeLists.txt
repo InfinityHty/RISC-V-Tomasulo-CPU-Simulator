@@ -2,21 +2,12 @@ cmake_minimum_required(VERSION 3.28)
 project(RISC_V_Tomasulo_CPU_Simulator)
 
 set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable(RISC_V_Tomasulo_CPU_Simulator
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR})
+
+add_executable(code
         src/main.cpp
-        include/Decoder.h
-        include/Memory.h
-        include/NaiveCPU.h
-        include/PC.h
-        include/RegFile.h
-        include/ALU.h
-        include/ROB.h
-        include/CDB.h
-        include/LSQ.h
-        include/RS.h
-        include/RST.h
-        include/TomasuloCPU.h
         src/NaiveCPU.cpp
         src/Memory.cpp
         src/Decoder.cpp
@@ -24,7 +15,11 @@ add_executable(RISC_V_Tomasulo_CPU_Simulator
         src/ROB.cpp
         src/CDB.cpp
         src/RS.cpp
-        src/RST.cpp
         src/LSQ.cpp
         src/ALU.cpp
-        src/TomasuloCPU.cpp)
+        src/TomasuloCPU.cpp
+)
+
+target_include_directories(code PUBLIC
+        ${PROJECT_SOURCE_DIR}/include
+)

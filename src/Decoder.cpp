@@ -1,7 +1,7 @@
 //
 // Created by HTY on 2026/7/27.
 //
-#include "../include/Decoder.h"
+#include "Decoder.h"
 Assembly Decoder::Decode(const uint8_t *binary_ins) {
     Assembly as;
     const uint32_t ins = binary_ins[0] + (binary_ins[1] << 8) + (binary_ins[2] << 16) + (binary_ins[3] << 24);

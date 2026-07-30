@@ -1,7 +1,7 @@
 //
 // Created by HTY on 2026/7/28.
 //
-#include "../include/ALU.h"
+#include "ALU.h"
 uint32_t ALU::Execute(const InsType type, const uint32_t data1, const uint32_t data2,const uint32_t imm,PC &pc) {
     // Arithmetic
     uint32_t cur_cnt = pc.GetCounter();

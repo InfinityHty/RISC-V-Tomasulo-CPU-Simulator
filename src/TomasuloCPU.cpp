@@ -1,7 +1,7 @@
 //
 // Created by HTY on 2026/7/29.
 //
-#include "../include/TomasuloCPU.h"
+#include "TomasuloCPU.h"
 // 模拟线缆广播传输
 bool CPU::Tick(BroadcastContent &in,BroadcastContent &out) {
     // set zero 0

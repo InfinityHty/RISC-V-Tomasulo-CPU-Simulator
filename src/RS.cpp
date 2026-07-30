@@ -1,7 +1,7 @@
 //
 // Created by HTY on 2026/7/29.
 //
-#include "../include/RS.h"
+#include "RS.h"
 void RS::Add(RegFile &reg,Assembly ass,RST &rst,uint32_t PC_cur) {
     RSElement cur;
     cur.id = counter++; // 分配唯一的标签

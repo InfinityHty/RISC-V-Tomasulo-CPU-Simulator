@@ -1,6 +1,6 @@
 //
 // Created by HTY on 2026/7/27.
-#include "../include/NaiveCPU.h"
+#include "NaiveCPU.h"
 #include <iostream>
 int main(){
     int clock = 0;

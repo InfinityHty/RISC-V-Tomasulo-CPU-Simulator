@@ -2,7 +2,7 @@
 // Created by HTY on 2026/7/28.
 //
 // 先写一个单级流水(naive simulator)
-#include "../include/NaiveCPU.h"
+#include "NaiveCPU.h"
 bool NaiveCPU::Tick() {
     // set zero 0
     reg.SetZero();
