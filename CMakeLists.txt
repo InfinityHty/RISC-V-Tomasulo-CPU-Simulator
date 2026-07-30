@@ -10,6 +10,7 @@ add_executable(RISC_V_Tomasulo_CPU_Simulator
         include/NaiveCPU.h
         src/NaiveCPU.cpp
         include/PC.h
+        include/RegFile.h
         src/Memory.cpp
         src/Decoder.cpp
         src/RegFile.cpp
