@@ -9,7 +9,7 @@ bool NaiveCPU::Tick() {
     // Instruction Fetch
     uint8_t binary_ins[4];
     uint32_t cur_cnt = pc.GetCounter();
-    std::cerr << std::hex << cur_cnt << std::dec << '\n';
+    // std::cerr << std::hex << cur_cnt << std::dec << '\n';
     for (int i = 0; i < 4; i++) {
         binary_ins[i] = memory.GetBinaryIns(cur_cnt + i);
     }
@@ -17,6 +17,8 @@ bool NaiveCPU::Tick() {
     Assembly assembly_ins = decoder.Decode(binary_ins);
     // Execute
     DataPair data = reg.GetData(assembly_ins.rs1,assembly_ins.rs2);
+    // DataPair tmp = reg.GetData(10);
+    // std::cerr << tmp.data1 << '\n';
     // Exit
     if (assembly_ins.quit) {
         std::cout << (data.data1 & 0xFF) << '\n';
@@ -24,6 +26,7 @@ bool NaiveCPU::Tick() {
     }
     uint32_t output = alu.Execute(assembly_ins.type,data.data1,data.data2,assembly_ins.imm,pc);
     // std::cerr << "output:" << output << '\n';
+    // std::cerr << "imm:" << assembly_ins.imm << '\n';
     // Memory Access
     uint32_t load = memory.AccessData(assembly_ins.type,data.data2,output);
     // Write Back

@@ -31,39 +31,31 @@ uint32_t Memory::AccessData(InsType type,uint32_t cont,uint32_t addr) {
     // Load
     // 小端序
     if (type == lb) {
-        int sign = data[addr] >> 7;
-        if (sign == 0) {
-            return data[addr];
-        }
-        else {
-            return (0xFFFFFF << 8) + data[addr];
-        }
+        return static_cast<int>(data[addr] << 24) >> 24;
     }
     if (type == lbu) return data[addr];
     if (type == lh) {
-        int sign = (data[addr] + (data[addr + 1] << 8)) >> 15;
-        if (sign == 0) {
-            return data[addr] + (data[addr + 1] << 8);
-        }
-        else {
-            return (0xFFFF << 16) + data[addr] + (data[addr + 1] << 8);
-        }
+        return static_cast<int>((data[addr] + (data[addr + 1] << 8)) << 16) >> 16;
     }
     if (type == lhu) return data[addr] + (data[addr + 1] << 8);
-    if (type == lw) return data[addr] + (data[addr + 1] << 8) + (data[addr + 2] << 16) + (data[addr + 3] << 24);
+    if (type == lw) {
+        // std::cerr << "addr: " << addr << '\n';
+        return data[addr] + (data[addr + 1] << 8) + (data[addr + 2] << 16) + (data[addr + 3] << 24);
+    }
     // Store
     if (type == sb) {
         data[addr] = cont & 0xFF;
     }
     if (type == sh) {
         data[addr] = cont & 0xFF;
-        data[addr + 1] = cont >> 8 & 0xFF;
+        data[addr + 1] = (cont >> 8) & 0xFF;
     }
     if (type == sw) {
+        // std::cerr << "cont: " << cont << "addr: " << addr << '\n';
         data[addr] = cont & 0xFF;
-        data[addr + 1] = cont >> 8 & 0xFF;
-        data[addr + 2] = cont >> 16 & 0xFF;
-        data[addr + 3] = cont >> 24 & 0xFF;
+        data[addr + 1] = (cont >> 8) & 0xFF;
+        data[addr + 2] = (cont >> 16) & 0xFF;
+        data[addr + 3] = (cont >> 24) & 0xFF;
     }
     // default
     return 0;

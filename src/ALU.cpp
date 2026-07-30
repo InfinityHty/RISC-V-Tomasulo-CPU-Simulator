@@ -43,27 +43,54 @@ uint32_t ALU::Execute(const InsType type, const uint32_t data1, const uint32_t d
         return cur_cnt + 4;
     }
     if (type == beq) {
-        std::cerr << "beq d1 " << data1 << " d2 " << data2 << '\n';
+        // std::cerr << "beq d1 " << data1 << " d2 " << data2 << '\n';
         if (data1 == data2) pc.SetNext(cur_cnt + imm);
+        return data1 == data2;
     }
     if (type == bge) {
         if (static_cast<int>(data1) >= static_cast<int>(data2)) pc.SetNext(cur_cnt + imm);
+        return static_cast<int>(data1) >= static_cast<int>(data2);
     }
     if (type == bgeu) {
         if (data1 >= data2) pc.SetNext(cur_cnt + imm);
+        return data1 >= data2;
     }
     if (type == blt) {
         if (static_cast<int>(data1) < static_cast<int>(data2)) pc.SetNext(cur_cnt + imm);
+        return static_cast<int>(data1) < static_cast<int>(data2);
     }
     if (type == bltu) {
         if (data1 < data2) pc.SetNext(cur_cnt + imm);
+        return data1 < data2;
     }
     if (type == bne) {
-        std::cerr << "bne d1 " << data1 << " d2 " << data2 << '\n';
+        // std::cerr << "bne d1 " << data1 << " d2 " << data2 << '\n';
         if (data1 != data2) pc.SetNext(cur_cnt + imm);
+        return data1 != data2;
     }
     // Other
     if (type == auipc) return cur_cnt + imm;
     if (type == lui) return imm;
-    return 0;
+}
+
+BroadcastContent ALU::Execute(RS &rs) {
+    // 一周期只执行一个运算
+    BroadcastContent out;
+    for (int i = 0; i < rs.total; i++) {
+        if (rs.waiting[i].has_Vj && rs.waiting[i].has_Vk) {
+            // 执行
+            RSElement cur = rs.waiting[i];
+            PC pc_tmp; // 不修改实际的pc
+            uint32_t output = Execute(cur.op,cur.data1,cur.data2,cur.imm,pc_tmp);
+            // 对于branch语句，output返回1说明实际jump
+            out = BroadcastContent(cur.id,output);
+            // 从RS中删除
+            for (int j = i; j < rs.total; j++) {
+                rs.waiting[j] = rs.waiting[j + 1];
+            }
+            rs.total--;
+            break;
+        }
+    }
+    return out;
 }

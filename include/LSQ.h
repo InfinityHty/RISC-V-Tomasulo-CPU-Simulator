@@ -1,0 +1,10 @@
+//
+// Created by HTY on 2026/7/30.
+//
+
+#ifndef RISC_V_TOMASULO_CPU_SIMULATOR_LSQ_H
+#define RISC_V_TOMASULO_CPU_SIMULATOR_LSQ_H
+class LSQ {
+
+};
+#endif //RISC_V_TOMASULO_CPU_SIMULATOR_LSQ_H

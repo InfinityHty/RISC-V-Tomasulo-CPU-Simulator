@@ -5,7 +5,7 @@
 Assembly Decoder::Decode(const uint8_t *binary_ins) {
     Assembly as;
     const uint32_t ins = binary_ins[0] + (binary_ins[1] << 8) + (binary_ins[2] << 16) + (binary_ins[3] << 24);
-    std::cerr << std::hex << "ins: 0x" << ins << '\n';
+    // std::cerr << std::hex << "ins: 0x" << ins << std::dec << '\n';
     uint8_t Opcode = ins & 0x7F;
     if (ins == 0x0FF00513) {
         as.quit = true;
@@ -100,7 +100,7 @@ Assembly Decoder::Decode(const uint8_t *binary_ins) {
             }
             else {
                 // 不做符号扩展
-                as.imm = static_cast<int>(ins >> 20 & 0x1F);
+                as.imm = static_cast<int>((ins >> 20) & 0x1F);
             }
             break;
         }
@@ -143,8 +143,7 @@ Assembly Decoder::Decode(const uint8_t *binary_ins) {
             as.rs1 = (ins & 0xF8000) >> 15;
             as.rs2 = (ins & 0x1F00000) >> 20;
             // 扩展
-            as.imm = static_cast<int>((((ins >> 25) << 5) + (ins >> 7) & 0x1F) << 20) >> 20;
-            // as.has_imm = true;
+            as.imm = static_cast<int>((((ins >> 25) << 5) + ((ins >> 7) & 0x1F)) << 20) >> 20;
             break;
         }
         case 0b1100011: {
@@ -210,6 +209,7 @@ Assembly Decoder::Decode(const uint8_t *binary_ins) {
         }
         case 0b1110011: {
             // ebreak/ecall 不实现
+            break;
         }
         default: break;
             // mul是否需要实现？
