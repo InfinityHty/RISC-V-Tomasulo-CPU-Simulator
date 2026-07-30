@@ -6,14 +6,14 @@ int main(){
     int clock = 0;
     int max_clock;
     Memory memory;
-    std::cin >> max_clock; // 检测有没有死循环
+    // std::cin >> max_clock; // 检测有没有死循环
     memory.Load();
     NaiveCPU cpu(memory);
     bool finish = false;
-    while (clock < max_clock && !finish) {
+    while (/*clock < max_clock && */!finish) {
         clock++;
         finish = cpu.Tick();
     }
-    std::cout << "Total clock time: " << clock << '\n';
+    // std::cout << "Total clock time: " << clock << '\n';
     return 0;
 }
