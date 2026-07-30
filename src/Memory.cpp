@@ -6,7 +6,7 @@
 void Memory::Load() {
     char line[100];
     int cur_add = 0;
-    std::cin.ignore();
+    // std::cin.ignore();
     while (std::cin.getline(line,50)) {
         if (line[0] == '\0') break;
         if (line[0] == '@') {

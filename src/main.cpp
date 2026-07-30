@@ -10,7 +10,8 @@ int main(){
     memory.Load();
     NaiveCPU cpu(memory);
     bool finish = false;
-    while (/*clock < max_clock && */!finish) {
+    // clock < max_clock &&
+    while (!finish) {
         clock++;
         finish = cpu.Tick();
     }
