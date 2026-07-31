@@ -17,16 +17,12 @@ bool NaiveCPU::Tick() {
     Assembly assembly_ins = decoder.Decode(binary_ins);
     // Execute
     DataPair data = reg.GetData(assembly_ins.rs1,assembly_ins.rs2);
-    // DataPair tmp = reg.GetData(10);
-    // std::cerr << tmp.data1 << '\n';
     // Exit
     if (assembly_ins.quit) {
         std::cout << (data.data1 & 0xFF) << '\n';
         return true;
     }
     uint32_t output = alu.Execute(assembly_ins.type,data.data1,data.data2,assembly_ins.imm,pc);
-    // std::cerr << "output:" << output << '\n';
-    // std::cerr << "imm:" << assembly_ins.imm << '\n';
     // Memory Access
     uint32_t load = memory.AccessData(assembly_ins.type,data.data2,output);
     // Write Back
