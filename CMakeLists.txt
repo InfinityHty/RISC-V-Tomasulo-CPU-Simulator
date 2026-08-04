@@ -18,6 +18,8 @@ add_executable(code
         src/LSQ.cpp
         src/ALU.cpp
         src/TomasuloCPU.cpp
+        src/AGU.cpp
+        include/Commons.h
 )
 
 target_include_directories(code PUBLIC

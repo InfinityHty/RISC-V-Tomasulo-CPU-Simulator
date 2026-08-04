@@ -5,6 +5,10 @@
 #include "RegFile.h"
 #include "Memory.h"
 #include "RS.h"
+#include "LSQ.h"
+#include "PC.h"
+#include "Commons.h"
+#include "CDB.h"
 class RS;
 struct ROBContent {
     int id; // 和RS的id对应相同
@@ -14,27 +18,31 @@ struct ROBContent {
     uint32_t value;
     bool ready;
     int tick;
+    Prediction pre; // 专门用于branch
+    uint32_t PC_nex;
     ROBContent() {
         op = unknown;
         source = des = value = 0;
         ready = false;
         id = 0;
         tick = 0;
+        pre = NUL;
+        PC_nex = 0;
     }
 };
 class ROB {
 public:
     ROB() {
-        head = 0;
-        tail = 1;
-        counter = 0;
+        head = tail = 0;
     }
-    void Add(Assembly ass);
-    void Commit(RegFile &reg,Memory &mem,RST &rst,RS &rs);
+    void Add(Assembly ass,RST &rst,int ROB_id);
+    bool Commit(RegFile &reg,Memory &mem,RST &rst,RS &rs,LSQ &lsq,PC &pc,CDB &cdb);
+    void Flush() {
+        tail = head;
+    }
     // 写一个循环队列
-    ROBContent cont[MAXN];
+    ROBContent cont[128];
     int head;
     int tail; // 指向最后一位的后一位
-    int counter;
 };
 #endif //RISC_V_TOMASULO_CPU_SIMULATOR_ROB_H

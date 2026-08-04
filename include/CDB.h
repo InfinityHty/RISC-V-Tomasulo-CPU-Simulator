@@ -7,13 +7,19 @@
 #include <cstdint>
 #include "ALU.h"
 #include "RS.h"
-#include "RST.h"
 #include "ROB.h"
+#include "LSQ.h"
+#include "Commons.h"
 class ROB;
 struct BroadcastContent;
 class RS;
 class CDB {
 public:
-    void Broadcast(BroadcastContent &in,RS &rs,ROB &rob);
+    CDB() {
+        has_cur = has_nex = false;
+    }
+    void Broadcast(RS &rs,LSQ &lsq,ROB &rob);
+    BroadcastContent cur,nex;
+    bool has_cur,has_nex;
 };
 #endif //RISC_V_TOMASULO_CPU_SIMULATOR_CDB_H

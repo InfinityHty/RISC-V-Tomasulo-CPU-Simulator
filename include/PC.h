@@ -10,7 +10,7 @@ public:
     uint32_t GetCounter() const {
         return counter;
     }
-    void SetCounter(const int new_counter) {
+    void SetCounter(const uint32_t new_counter) {
         counter = new_counter;
     }
     void SetNext(uint32_t next) {

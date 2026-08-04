@@ -8,7 +8,7 @@ Assembly Decoder::Decode(const uint8_t *binary_ins) {
     // std::cerr << std::hex << "ins: 0x" << ins << std::dec << '\n';
     uint8_t Opcode = ins & 0x7F;
     if (ins == 0x0FF00513) {
-        as.quit = true;
+        as.type = quit;
         as.rs1 = 10; // a0
         return as;
     }

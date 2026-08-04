@@ -10,7 +10,7 @@ enum InsType {
     add,sub,and_,or_,xor_,sll,srl,sra,slt,sltu,
     addi,andi,ori,xori,slli,srli,srai,slti,sltiu,
     lb,lbu,lh,lhu,lw,sb,sh,sw,beq,bge,bgeu,blt,bltu,
-    bne,jal,jalr,auipc,lui,unknown
+    bne,jal,jalr,auipc,lui,unknown,quit
 }; // 加一个unknown
 struct Assembly {
     InsType type;

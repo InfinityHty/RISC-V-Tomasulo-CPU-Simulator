@@ -14,12 +14,17 @@
 #include "ROB.h"
 #include "CDB.h"
 #include "LSQ.h"
-class CPU {
-    CPU(Memory mem) {
+#include "AGU.h"
+class TomasuloCPU {
+public:
+    TomasuloCPU(Memory& mem) {
         memory = mem;
+        counter = 0;
     }
-    bool Tick(BroadcastContent &in,BroadcastContent &out);
+    bool Tick();
+    int counter; // 不重复的ROB_id
 private:
+
     Memory memory;
     Decoder decoder;
     ALU alu;
@@ -30,5 +35,6 @@ private:
     CDB cdb;
     ROB rob;
     LSQ lsq;
+    AGU agu;
 };
 #endif //RISC_V_TOMASULO_CPU_SIMULATOR_TOMASULOCPU_H

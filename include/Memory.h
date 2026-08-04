@@ -6,7 +6,7 @@
 #include <cstdint>
 #include <iostream>
 #include "Decoder.h"
-const int MAXN = 2e6 + 5;
+const int MAXN = 1e6 + 5;
 class Memory {
 public:
     Memory() {

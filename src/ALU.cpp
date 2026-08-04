@@ -25,69 +25,69 @@ uint32_t ALU::Execute(const InsType type, const uint32_t data1, const uint32_t d
     if (type == slti) return static_cast<int>(data1) < static_cast<int>(imm) ? 1 : 0;
     if (type == sltiu) return data1 < imm ? 1 : 0;
     // Memory
-    if (type == lb || type == lbu || type == lh || type == lhu || type == lw
-        || type == sb || type == sh || type == sw) {
-        return data1 + imm; // 返回内存地址
-    }
+    // if (type == lb || type == lbu || type == lh || type == lhu || type == lw
+    //     || type == sb || type == sh || type == sw) {
+    //     return data1 + imm; // 返回内存地址
+    // }
     // Control
     if (type == jal) {
-        pc.SetNext(cur_cnt + static_cast<int>(imm));
-        // std::cerr << std::hex << cur_cnt << " " << imm << '\n';
+        // pc.SetNext(cur_cnt + static_cast<int>(imm));
         return cur_cnt + 4;
     }
     if (type == jalr) {
-        pc.SetNext(data1 + imm);
+        // pc.SetNext(data1 + imm);
         return cur_cnt + 4;
     }
     if (type == beq) {
         // std::cerr << "beq d1 " << data1 << " d2 " << data2 << '\n';
-        if (data1 == data2) pc.SetNext(cur_cnt + imm);
+        // if (data1 == data2) pc.SetNext(cur_cnt + imm);
         return data1 == data2;
     }
     if (type == bge) {
-        if (static_cast<int>(data1) >= static_cast<int>(data2)) pc.SetNext(cur_cnt + imm);
+        // if (static_cast<int>(data1) >= static_cast<int>(data2)) pc.SetNext(cur_cnt + imm);
         return static_cast<int>(data1) >= static_cast<int>(data2);
     }
     if (type == bgeu) {
-        if (data1 >= data2) pc.SetNext(cur_cnt + imm);
+        // if (data1 >= data2) pc.SetNext(cur_cnt + imm);
         return data1 >= data2;
     }
     if (type == blt) {
-        if (static_cast<int>(data1) < static_cast<int>(data2)) pc.SetNext(cur_cnt + imm);
+        // if (static_cast<int>(data1) < static_cast<int>(data2)) pc.SetNext(cur_cnt + imm);
         return static_cast<int>(data1) < static_cast<int>(data2);
     }
     if (type == bltu) {
-        if (data1 < data2) pc.SetNext(cur_cnt + imm);
+        // if (data1 < data2) pc.SetNext(cur_cnt + imm);
         return data1 < data2;
     }
     if (type == bne) {
         // std::cerr << "bne d1 " << data1 << " d2 " << data2 << '\n';
-        if (data1 != data2) pc.SetNext(cur_cnt + imm);
+        // if (data1 != data2) pc.SetNext(cur_cnt + imm);
         return data1 != data2;
     }
     // Other
     if (type == auipc) return cur_cnt + imm;
     if (type == lui) return imm;
+    return 0;
 }
 
-BroadcastContent ALU::Execute(RS &rs) {
-    // 一周期只执行一个运算
-    BroadcastContent out;
+void ALU::Execute(RS &rs,CDB &cdb,PC &pc) {
+    if (cdb.has_nex) return; // CDB已经被占
+    // 一个周期只执行一个运算
     for (int i = 0; i < rs.total; i++) {
         if (rs.waiting[i].has_Vj && rs.waiting[i].has_Vk) {
             // 执行
             RSElement cur = rs.waiting[i];
-            PC pc_tmp; // 不修改实际的pc
-            uint32_t output = Execute(cur.op,cur.data1,cur.data2,cur.imm,pc_tmp);
+            uint32_t output = Execute(cur.op,cur.data1,cur.data2,cur.imm,pc);
             // 对于branch语句，output返回1说明实际jump
-            out = BroadcastContent(cur.id,output);
+            if (output == 1) cdb.nex = BroadcastContent(cur.id,output,cur.predict,cur.PC_cur + cur.imm);
+            else cdb.nex = BroadcastContent(cur.id,output,cur.predict,cur.PC_cur + 4);
+            cdb.has_nex = true;
             // 从RS中删除
-            for (int j = i; j < rs.total; j++) {
+            for (int j = i; j < rs.total - 1; j++) {
                 rs.waiting[j] = rs.waiting[j + 1];
             }
             rs.total--;
             break;
         }
     }
-    return out;
 }

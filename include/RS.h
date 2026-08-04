@@ -6,12 +6,10 @@
 #define RISC_V_TOMASULO_CPU_SIMULATOR_RS_H
 #include "Decoder.h"
 #include "RegFile.h"
-#include "CDB.h"
 #include "RST.h"
+#include "Commons.h"
+#include "PC.h"
 class CDB;
-enum Prediction {
-    StrongJump,WeakJump,WeakNotJump,StrongNotJump
-};
 struct RSElement {
     int id; // 分配生产者编号
     InsType op;
@@ -20,30 +18,30 @@ struct RSElement {
     bool has_Vj,has_Vk;
     int Qj,Qk; // 生产者标签
     uint8_t des;
-    uint8_t source; // store从哪里读取
-    uint32_t PC_next; // PC下一步跳到哪里
+    uint32_t PC_cur; // PC下一步跳到哪里
+    Prediction predict;
     RSElement() {
         id = 0;
         op = unknown;
-        data1 = data2 = imm = Qj = Qk = source = 0;
+        data1 = data2 = imm = Qj = Qk = 0;
         des = 0;
         has_Vj = has_Vk = false;
-        PC_next = 4;
+        PC_cur = 0;
+        predict = NUL;
     }
 };
 class RS {
 public:
     RS() {
         total = 0;
-        pre = WeakNotJump;
-        counter = 0;
+        pre = NUL;
     }
-    void Add(RegFile &reg,Assembly ass,RST &rst,uint32_t PC_cur);
-    void Receive(CDB &cdb);
+    void Add(RegFile &reg,Assembly ass,RST &rst,PC &pc,int ROB_id);
+    void Flush() {
+        total = 0;
+    }
     RSElement waiting[1000];
     int total;
     Prediction pre;
-private:
-    int counter;
 };
 #endif //RISC_V_TOMASULO_CPU_SIMULATOR_RS_H
