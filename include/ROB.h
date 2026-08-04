@@ -9,7 +9,7 @@
 #include "PC.h"
 #include "Commons.h"
 #include "CDB.h"
-const int ROB_SIZE = 64;
+const int ROB_SIZE = 4096;
 class RS;
 class CDB;
 struct ROBContent {

@@ -42,7 +42,7 @@ public:
     void Flush() {
         total = 0;
     }
-    RSElement waiting[16];
+    RSElement waiting[1024];
     int total;
     Prediction pre;
 };

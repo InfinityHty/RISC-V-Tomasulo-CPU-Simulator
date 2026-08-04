@@ -38,7 +38,7 @@ public:
         for (int i = 0; i < total - 1; i++) waiting[i] = waiting[i + 1];
         total--;
     }
-    LSQElement waiting[16];
+    LSQElement waiting[1024];
     int total;
 };
 #endif //RISC_V_TOMASULO_CPU_SIMULATOR_LSQ_H
