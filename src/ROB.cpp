@@ -4,7 +4,6 @@ void ROB::Add(Assembly ass,RST &rst,int ROB_id) {
     ROBContent cur;
     cur.op = ass.type;
     cur.pre = NUL; // 专门接收分支预测结果
-    // for (int i = 0; i < 32; i++) cur.Qi[i] = rst.Qi[i];
     if (ass.type == sb || ass.type == sh || ass.type == sw) {
         cur.source = ass.rd;
     }
@@ -23,7 +22,6 @@ bool ROB::Commit(RegFile &reg,Memory &mem,RST &rst,RS &rs,LSQ &lsq,PC &pc,CDB &c
         return true;
     }
     if (cur.ready) {
-        // std::cerr << cur.id << "\n";
         // 队首准备好了
         // 写入寄存器
         if (cur.op == add || cur.op == sub || cur.op == and_ || cur.op == or_
@@ -100,10 +98,10 @@ bool ROB::Commit(RegFile &reg,Memory &mem,RST &rst,RS &rs,LSQ &lsq,PC &pc,CDB &c
     else {
         // 没准备好 只能是文件读写
         // 进行真正的文件读写 模拟3个周期
-        if (cur.tick < 2) {
-            cur.tick++;
-            return false;
-        }
+        // if (cur.tick < 2) {
+        //     cur.tick++;
+        //     return false;
+        // }
         // store
         if (cur.op == sb || cur.op == sh || cur.op == sw) {
             // 真正写入内存

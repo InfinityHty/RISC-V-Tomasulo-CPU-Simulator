@@ -35,10 +35,11 @@ public:
         total = 0;
     }
     void Pop() {
+        // if (total == 0) return;
         for (int i = 0; i < total - 1; i++) waiting[i] = waiting[i + 1];
         total--;
     }
-    LSQElement waiting[1024];
+    LSQElement waiting[4096];
     int total;
 };
 #endif //RISC_V_TOMASULO_CPU_SIMULATOR_LSQ_H

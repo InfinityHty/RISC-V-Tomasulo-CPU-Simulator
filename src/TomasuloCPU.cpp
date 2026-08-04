@@ -12,7 +12,7 @@ bool TomasuloCPU::Tick() {
     uint8_t binary_ins[4];
     uint32_t cur_cnt = pc.GetCounter();
     //std::cerr << std::hex << cur_cnt << std::dec << '\n';
-    // std::cerr << rob.head << " " << rob.tail << '\n';
+    // std::cerr << rs.total << " " << lsq.total << " " << rob.tail - rob.head << '\n';
     for (int i = 0; i < 4; i++) {
         binary_ins[i] = memory.GetBinaryIns(cur_cnt + i);
     }
