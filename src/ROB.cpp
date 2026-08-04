@@ -22,6 +22,7 @@ bool ROB::Commit(RegFile &reg,Memory &mem,RST &rst,RS &rs,LSQ &lsq,PC &pc,CDB &c
         return true;
     }
     if (cur.ready) {
+        // std::cerr << cur.id << "\n";
         // 队首准备好了
         // 写入寄存器
         if (cur.op == add || cur.op == sub || cur.op == and_ || cur.op == or_

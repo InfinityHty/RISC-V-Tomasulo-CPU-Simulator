@@ -67,6 +67,7 @@ void RS::Add(RegFile &reg,Assembly ass,RST &rst,PC &pc,int ROB_id) {
         cur.has_Vj = cur.has_Vk = true;
         pc.SetNext(cur.PC_cur + ass.imm);
         cur.des = ass.rd;
+        rst.branch[rst.num].Qi[ass.rd] = cur.id;
     }
     // 等待
     if (ass.type == jalr) {
@@ -80,6 +81,7 @@ void RS::Add(RegFile &reg,Assembly ass,RST &rst,PC &pc,int ROB_id) {
         cur.des = ass.rd;
         if (cur.has_Vj) {
             pc.SetNext(cur.data1 + cur.imm);
+            rst.branch[rst.num].Qi[ass.rd] = cur.id;
         }
         else {
             pc.SetNext(cur.PC_cur); // 停在这一步直到准备好 先不加入RS
@@ -91,11 +93,13 @@ void RS::Add(RegFile &reg,Assembly ass,RST &rst,PC &pc,int ROB_id) {
         cur.has_Vj = cur.has_Vk = true;
         cur.imm = ass.imm;
         cur.des = ass.rd;
+        rst.branch[rst.num].Qi[ass.rd] = cur.id;
     }
     if (ass.type == lui) {
         cur.has_Vj = cur.has_Vk = true;
         cur.des = ass.rd;
         cur.imm = ass.imm;
+        rst.branch[rst.num].Qi[ass.rd] = cur.id;
     }
     // 加入RS
     waiting[total++] = cur;
