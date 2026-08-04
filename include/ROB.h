@@ -30,7 +30,6 @@ struct ROBContent {
         tick = 0;
         pre = NUL;
         PC_nex = 0;
-        // for (int i = 0; i < 32; i++) Qi[i] = -1;
     }
 };
 class ROB {
@@ -42,6 +41,10 @@ public:
     bool Commit(RegFile &reg,Memory &mem,RST &rst,RS &rs,LSQ &lsq,PC &pc,CDB &cdb);
     void Flush() {
         tail = (head + 1) % ROB_SIZE;
+    }
+    bool Full() {
+        if ((tail + 1) % ROB_SIZE == head) return true;
+        return false;
     }
     bool Ready(const int id) const {
         int i = head;

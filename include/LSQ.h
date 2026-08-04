@@ -4,6 +4,7 @@
 #include "RegFile.h"
 #include "RST.h"
 #include "ROB.h"
+#include "PC.h"
 class ROB;
 // 只负责load和store的指令管理
 struct LSQElement {
@@ -30,7 +31,7 @@ public:
     LSQ() {
         total = 0;
     }
-    void Add(RegFile &reg,Assembly ass,RST &rst,ROB &rob,int ROB_id);
+    void Add(RegFile &reg,Assembly ass,RST &rst,ROB &rob,PC &pc,int ROB_id);
     void Flush() {
         total = 0;
     }

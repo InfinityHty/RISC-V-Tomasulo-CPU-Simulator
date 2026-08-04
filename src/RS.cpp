@@ -3,6 +3,10 @@ void RS::Add(RegFile &reg,Assembly ass,RST &rst,ROB &rob,PC &pc,int ROB_id) {
     if (ass.type == lb || ass.type == lbu || ass.type == lh || ass.type == lhu
         || ass.type == lw || ass.type == sb || ass.type == sh || ass.type == sw
         || ass.type == quit) return;
+    if (rob.Full()) {
+        pc.SetNext(pc.GetCounter()); // 停在这一步
+        return;
+    }
     RSElement cur;
     cur.id = ROB_id; // 分配唯一的标签
     cur.op = ass.type;

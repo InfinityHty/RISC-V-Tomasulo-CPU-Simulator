@@ -1,6 +1,7 @@
 #include "ROB.h"
 void ROB::Add(Assembly ass,RST &rst,int ROB_id) {
     if (ass.type == jalr && rst.HasTag(ass.rs1) && !Ready(rst.Qi[ass.rs1])) return; // 等待rs1
+    if (Full()) return;
     ROBContent cur;
     cur.op = ass.type;
     cur.pre = NUL; // 专门接收分支预测结果
@@ -98,10 +99,10 @@ bool ROB::Commit(RegFile &reg,Memory &mem,RST &rst,RS &rs,LSQ &lsq,PC &pc,CDB &c
     else {
         // 没准备好 只能是文件读写
         // 进行真正的文件读写 模拟3个周期
-        // if (cur.tick < 2) {
-        //     cur.tick++;
-        //     return false;
-        // }
+        if (cur.tick < 2) {
+            cur.tick++;
+            return false;
+        }
         // store
         if (cur.op == sb || cur.op == sh || cur.op == sw) {
             // 真正写入内存

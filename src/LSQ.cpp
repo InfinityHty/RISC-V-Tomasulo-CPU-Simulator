@@ -2,10 +2,13 @@
 // Created by HTY on 2026/7/30.
 //
 #include "LSQ.h"
-void LSQ::Add(RegFile &reg,Assembly ass,RST &rst,ROB &rob,int ROB_id) {
+void LSQ::Add(RegFile &reg,Assembly ass,RST &rst,ROB &rob,PC &pc,int ROB_id) {
     if (ass.type != lb && ass.type != lbu && ass.type != lh && ass.type != lhu
         && ass.type != lw && ass.type != sb && ass.type != sh && ass.type != sw) return;
-
+    if (rob.Full()) {
+        pc.SetCounter(pc.GetCounter());
+        return;
+    }
     LSQElement cur;
     cur.id = ROB_id;
     cur.op = ass.type;
