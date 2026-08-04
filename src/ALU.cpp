@@ -77,7 +77,9 @@ void ALU::Execute(RS &rs,CDB &cdb,PC &pc) {
         if (rs.waiting[i].has_Vj && rs.waiting[i].has_Vk) {
             // 执行
             RSElement cur = rs.waiting[i];
-            uint32_t output = Execute(cur.op,cur.data1,cur.data2,cur.imm,pc);
+            PC pc_tmp;
+            pc_tmp.SetCounter(cur.PC_cur);
+            uint32_t output = Execute(cur.op,cur.data1,cur.data2,cur.imm,pc_tmp);
             // 对于branch语句，output返回1说明实际jump
             if (output == 1) cdb.nex = BroadcastContent(cur.id,output,cur.predict,cur.PC_cur + cur.imm);
             else cdb.nex = BroadcastContent(cur.id,output,cur.predict,cur.PC_cur + 4);

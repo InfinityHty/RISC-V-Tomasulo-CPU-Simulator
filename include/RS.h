@@ -8,8 +8,10 @@
 #include "RegFile.h"
 #include "RST.h"
 #include "Commons.h"
+#include "ROB.h"
 #include "PC.h"
 class CDB;
+class ROB;
 struct RSElement {
     int id; // 分配生产者编号
     InsType op;
@@ -34,13 +36,13 @@ class RS {
 public:
     RS() {
         total = 0;
-        pre = NUL;
+        pre = WeakJump;
     }
-    void Add(RegFile &reg,Assembly ass,RST &rst,PC &pc,int ROB_id);
+    void Add(RegFile &reg,Assembly ass,RST &rst,ROB &rob,PC &pc,int ROB_id);
     void Flush() {
         total = 0;
     }
-    RSElement waiting[1000];
+    RSElement waiting[10000];
     int total;
     Prediction pre;
 };

@@ -5,6 +5,7 @@
 bool TomasuloCPU::Tick() {
     // set zero 0
     reg.SetZero();
+    rst.Qi[0] = -1; // clear zero's tag
     // Dispatch ROB_ID
     counter++;
     // Instruction Fetch
@@ -19,8 +20,8 @@ bool TomasuloCPU::Tick() {
     Assembly assembly_ins = decoder.Decode(binary_ins);
 
     // Issue
-    rs.Add(reg,assembly_ins,rst,pc,counter);
-    lsq.Add(reg,assembly_ins,rst,counter);
+    rs.Add(reg,assembly_ins,rst,rob,pc,counter);
+    lsq.Add(reg,assembly_ins,rst,rob,counter);
     rob.Add(assembly_ins,rst,counter);
     // Execute
     alu.Execute(rs,cdb,pc);

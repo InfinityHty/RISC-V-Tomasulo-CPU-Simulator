@@ -6,13 +6,13 @@ int main(){
     int clock = 0;
     int max_clock;
     Memory memory;
-    std::cin >> max_clock; // 检测有没有死循环
-    std::cin.ignore();
+    //std::cin >> max_clock; // 检测有没有死循环
+    //std::cin.ignore();
     memory.Load();
     TomasuloCPU cpu(memory);
     bool finish = false;
-    //
-    while (clock < max_clock && !finish) {
+    // clock < max_clock &&
+    while (!finish) {
         clock++;
         finish = cpu.Tick();
     }

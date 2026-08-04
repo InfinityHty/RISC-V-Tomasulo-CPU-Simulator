@@ -11,6 +11,7 @@
 #include "LSQ.h"
 #include "Commons.h"
 class ROB;
+class LSQ;
 struct BroadcastContent;
 class RS;
 class CDB {

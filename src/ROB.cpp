@@ -1,9 +1,10 @@
 #include "ROB.h"
 void ROB::Add(Assembly ass,RST &rst,int ROB_id) {
-    if (ass.type == jalr && rst.HasTag(ass.rs1)) return;
+    if (ass.type == jalr && rst.HasTag(ass.rs1)) return; // 等待rs1
     ROBContent cur;
     cur.op = ass.type;
     cur.pre = NUL; // 专门接收分支预测结果
+    // for (int i = 0; i < 32; i++) cur.Qi[i] = rst.Qi[i];
     if (ass.type == sb || ass.type == sh || ass.type == sw) {
         cur.source = ass.rd;
     }
@@ -13,7 +14,7 @@ void ROB::Add(Assembly ass,RST &rst,int ROB_id) {
     cur.id = ROB_id;
     cur.ready = false;
     cont[tail++] = cur;
-    tail %= 128; // 模拟循环队列
+    tail %= ROB_SIZE; // 模拟循环队列
 }
 bool ROB::Commit(RegFile &reg,Memory &mem,RST &rst,RS &rs,LSQ &lsq,PC &pc,CDB &cdb) {
     ROBContent& cur = cont[head];
@@ -34,9 +35,9 @@ bool ROB::Commit(RegFile &reg,Memory &mem,RST &rst,RS &rs,LSQ &lsq,PC &pc,CDB &c
         || cur.op == jal || cur.op == jalr || cur.op == auipc || cur.op == lui) {
             reg.Write(cur.op,cur.des,cur.value,cur.value);
             if (cur.op == lb || cur.op == lbu || cur.op == lh || cur.op == lhu || cur.op == lw) lsq.Pop();
-            if (rst.branch[rst.num].Qi[cur.des] == cur.id) rst.branch[rst.num].Qi[cur.des] = -1; // 去掉RST标记
-            head++;
-            head %= 128;
+            if (rst.Qi[cur.des] == cur.id) {
+                rst.Qi[cur.des] = -1;
+            } // 去掉RST标记 每一层要统一
         }
         // 分支预测
         if (cur.op == beq || cur.op == bge || cur.op == bgeu || cur.op == blt
@@ -55,17 +56,17 @@ bool ROB::Commit(RegFile &reg,Memory &mem,RST &rst,RS &rs,LSQ &lsq,PC &pc,CDB &c
                     rs.Flush();
                     lsq.Flush();
                     Flush();
-                    rst.num--;
+                    for (int i = 0; i < 32; i++) rst.Qi[i] = -1;
                     rs.pre = WeakJump;
-                    pc.SetCounter(cur.PC_nex);
+                    pc.SetNext(cur.PC_nex);
                 }
                 if (cur.pre == StrongNotJump) {
                     rs.Flush();
                     lsq.Flush();
                     Flush();
-                    rst.num--;
+                    for (int i = 0; i < 32; i++) rst.Qi[i] = -1;
                     rs.pre = WeakNotJump;
-                    pc.SetCounter(cur.PC_nex);
+                    pc.SetNext(cur.PC_nex);
                 }
             }
             else if (cur.value == 0) {
@@ -73,17 +74,17 @@ bool ROB::Commit(RegFile &reg,Memory &mem,RST &rst,RS &rs,LSQ &lsq,PC &pc,CDB &c
                     rs.Flush();
                     lsq.Flush();
                     Flush();
-                    rst.num--;
+                    for (int i = 0; i < 32; i++) rst.Qi[i] = -1;
                     rs.pre = WeakJump;
-                    pc.SetCounter(cur.PC_nex);
+                    pc.SetNext(cur.PC_nex);
                 }
                 if (cur.pre == WeakJump) {
                     rs.Flush();
                     lsq.Flush();
                     Flush();
-                    rst.num--;
+                    for (int i = 0; i < 32; i++) rst.Qi[i] = -1;
                     rs.pre = WeakNotJump;
-                    pc.SetCounter(cur.PC_nex);
+                    pc.SetNext(cur.PC_nex);
                 }
                 if (cur.pre == WeakNotJump) {
                     rs.pre = StrongNotJump;
@@ -93,7 +94,8 @@ bool ROB::Commit(RegFile &reg,Memory &mem,RST &rst,RS &rs,LSQ &lsq,PC &pc,CDB &c
                 }
             }
         }
-
+        head++;
+        head %= ROB_SIZE;
     }
     else {
         // 没准备好 只能是文件读写
@@ -107,7 +109,7 @@ bool ROB::Commit(RegFile &reg,Memory &mem,RST &rst,RS &rs,LSQ &lsq,PC &pc,CDB &c
             // 真正写入内存
             mem.AccessData(cur.op,lsq.waiting[0].data2,lsq.waiting[0].addr);
             head++;
-            head %= 128;
+            head %= ROB_SIZE;
             lsq.Pop();
         }
         if (cur.op == lb || cur.op == lbu || cur.op == lh || cur.op == lhu || cur.op == lw) {

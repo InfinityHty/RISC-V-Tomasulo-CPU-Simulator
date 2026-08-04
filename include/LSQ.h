@@ -3,6 +3,8 @@
 #include "Decoder.h"
 #include "RegFile.h"
 #include "RST.h"
+#include "ROB.h"
+class ROB;
 // 只负责load和store的指令管理
 struct LSQElement {
     int id;
@@ -28,7 +30,7 @@ public:
     LSQ() {
         total = 0;
     }
-    void Add(RegFile &reg,Assembly ass,RST &rst,int ROB_id);
+    void Add(RegFile &reg,Assembly ass,RST &rst,ROB &rob,int ROB_id);
     void Flush() {
         total = 0;
     }
@@ -36,7 +38,7 @@ public:
         for (int i = 0; i < total - 1; i++) waiting[i] = waiting[i + 1];
         total--;
     }
-    LSQElement waiting[100];
+    LSQElement waiting[10000];
     int total;
 };
 #endif //RISC_V_TOMASULO_CPU_SIMULATOR_LSQ_H
