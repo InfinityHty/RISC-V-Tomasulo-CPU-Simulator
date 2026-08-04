@@ -9,7 +9,7 @@
 #include "PC.h"
 #include "Commons.h"
 #include "CDB.h"
-const int ROB_SIZE = 10000;
+const int ROB_SIZE = 64;
 class RS;
 class CDB;
 struct ROBContent {
@@ -22,7 +22,6 @@ struct ROBContent {
     int tick;
     Prediction pre; // 专门用于branch
     uint32_t PC_nex; // branch
-    // int Qi[32]{}; // branch rst snapshot
     ROBContent() {
         op = unknown;
         source = des = value = 0;

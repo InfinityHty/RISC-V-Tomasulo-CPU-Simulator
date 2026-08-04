@@ -26,7 +26,8 @@ void CDB::Broadcast(RS &rs,LSQ &lsq,ROB &rob) {
                 lsq.waiting[i].has_Vk = true;
             }
         }
-        for (int i = rob.head; i < rob.tail; i++) {
+        int i = rob.head;
+        while(i != rob.tail) {
             // ROB写入
             if (rob.cont[i].id == cur.id) {
                 rob.cont[i].value = cur.value;
@@ -34,6 +35,7 @@ void CDB::Broadcast(RS &rs,LSQ &lsq,ROB &rob) {
                 rob.cont[i].pre = cur.pre; // 分支预测专用
                 rob.cont[i].PC_nex = cur.PC_nex;
             }
+            i = (i + 1) % ROB_SIZE;
         }
     }
     if (has_nex) {

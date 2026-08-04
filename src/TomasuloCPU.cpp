@@ -11,14 +11,13 @@ bool TomasuloCPU::Tick() {
     // Instruction Fetch
     uint8_t binary_ins[4];
     uint32_t cur_cnt = pc.GetCounter();
-    // std::cerr << std::hex << cur_cnt << std::dec << '\n';
-    // std::cerr << (reg.GetData(10).data1 & 0xFF) << '\n';
+     std::cerr << std::hex << cur_cnt << std::dec << '\n';
+    // std::cerr << rob.head << " " << rob.tail << '\n';
     for (int i = 0; i < 4; i++) {
         binary_ins[i] = memory.GetBinaryIns(cur_cnt + i);
     }
     // Instruction Decode
     Assembly assembly_ins = decoder.Decode(binary_ins);
-
     // Issue
     rs.Add(reg,assembly_ins,rst,rob,pc,counter);
     lsq.Add(reg,assembly_ins,rst,rob,counter);

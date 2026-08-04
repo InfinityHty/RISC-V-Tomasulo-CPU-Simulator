@@ -16,6 +16,6 @@ int main(){
         clock++;
         finish = cpu.Tick();
     }
-    std::cout << "Total clock time: " << clock << '\n';
+    //std::cout << "Total clock time: " << clock << '\n';
     return 0;
 }
