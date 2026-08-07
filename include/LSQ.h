@@ -30,10 +30,13 @@ class LSQ {
 public:
     LSQ() {
         total = 0;
+        has_append = false;
     }
-    void Add(RegFile &reg,Assembly ass,RST &rst,ROB &rob,PC &pc,int ROB_id);
+    void Fetch(Assembly ass);
+    void Issue(RegFile &reg,RST &rst,ROB &rob,PC &pc,int ROB_id);
     void Flush() {
         total = 0;
+        has_append = false;
     }
     void Pop() {
         // if (total == 0) return;
@@ -42,5 +45,10 @@ public:
     }
     LSQElement waiting[4096];
     int total;
+    struct LastFetch {
+        Assembly ass;
+        int ROB_id{};
+    }append;
+    bool has_append;
 };
 #endif //RISC_V_TOMASULO_CPU_SIMULATOR_LSQ_H

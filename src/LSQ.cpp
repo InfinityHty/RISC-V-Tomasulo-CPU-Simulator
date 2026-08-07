@@ -2,9 +2,20 @@
 // Created by HTY on 2026/7/30.
 //
 #include "LSQ.h"
-void LSQ::Add(RegFile &reg,Assembly ass,RST &rst,ROB &rob,PC &pc,int ROB_id) {
+void LSQ::Fetch(Assembly ass) {
+    if (!has_append) {
+        append.ass = ass;
+        has_append = true;
+    }
+}
+void LSQ::Issue(RegFile &reg,RST &rst,ROB &rob,PC &pc,int ROB_id) {
+    if (!has_append) return;
+    Assembly ass = append.ass;
     if (ass.type != lb && ass.type != lbu && ass.type != lh && ass.type != lhu
-        && ass.type != lw && ass.type != sb && ass.type != sh && ass.type != sw) return;
+        && ass.type != lw && ass.type != sb && ass.type != sh && ass.type != sw) {
+        has_append = false;
+        return;
+    }
     if (rob.Full()) {
         pc.SetCounter(pc.GetCounter());
         return;
@@ -60,4 +71,6 @@ void LSQ::Add(RegFile &reg,Assembly ass,RST &rst,ROB &rob,PC &pc,int ROB_id) {
         cur.imm = ass.imm;
     }
     waiting[total++] = cur;
+    rob.Add(ass,rst,ROB_id);
+    has_append = false;
 }

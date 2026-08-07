@@ -37,13 +37,22 @@ public:
     RS() {
         total = 0;
         pre = WeakJump;
+        has_append = false;
     }
-    void Add(RegFile &reg,Assembly ass,RST &rst,ROB &rob,PC &pc,int ROB_id);
+    void Fetch(Assembly ass,PC &pc);
+    void Issue(RegFile &reg,RST &rst,ROB &rob,PC &pc,int ROB_id);
     void Flush() {
         total = 0;
+        has_append = false;
     }
     RSElement waiting[4096];
     int total;
     Prediction pre;
+    struct LastFetch {
+        Assembly ass;
+        PC pc;
+        Prediction pre = WeakJump;
+    }append;
+    bool has_append;
 };
 #endif //RISC_V_TOMASULO_CPU_SIMULATOR_RS_H

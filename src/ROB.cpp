@@ -1,7 +1,7 @@
 #include "ROB.h"
 void ROB::Add(Assembly ass,RST &rst,int ROB_id) {
-    if (ass.type == jalr && rst.HasTag(ass.rs1) && !Ready(rst.Qi[ass.rs1])) return; // 等待rs1
-    if (Full()) return;
+    // if (ass.type == jalr && rst.HasTag(ass.rs1) && !Ready(rst.Qi[ass.rs1])) return; // 等待rs1
+    // if (Full()) return;
     ROBContent cur;
     cur.op = ass.type;
     cur.pre = NUL; // 专门接收分支预测结果
@@ -17,6 +17,7 @@ void ROB::Add(Assembly ass,RST &rst,int ROB_id) {
     tail %= ROB_SIZE; // 模拟循环队列
 }
 bool ROB::Commit(RegFile &reg,Memory &mem,RST &rst,RS &rs,LSQ &lsq,PC &pc,CDB &cdb) {
+    if (head == tail) return false; // empty ROB
     ROBContent& cur = cont[head];
     if (cur.op == quit) {
         std::cout << (reg.GetData(10).data1 & 0xFF) << '\n';

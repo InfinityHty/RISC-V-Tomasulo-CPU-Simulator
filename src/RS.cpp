@@ -1,17 +1,51 @@
 #include "RS.h"
-void RS::Add(RegFile &reg,Assembly ass,RST &rst,ROB &rob,PC &pc,int ROB_id) {
-    if (ass.type == lb || ass.type == lbu || ass.type == lh || ass.type == lhu
-        || ass.type == lw || ass.type == sb || ass.type == sh || ass.type == sw
-        || ass.type == quit) return;
+void RS::Fetch(Assembly ass,PC &pc) {
+    if (!has_append) {
+        // Successfully fetch
+        has_append = true;
+        append.ass = ass;
+        append.pc = pc;
+        append.pre = pre;
+        uint32_t cur_cnt = pc.GetCounter();
+        pc.SetNext(cur_cnt + 4);
+        if (ass.type == beq || ass.type == bge || ass.type == bgeu || ass.type == bltu
+            || ass.type == blt || ass.type == bne) {
+            if (pre == WeakJump || pre == StrongJump) {
+                pc.SetNext(cur_cnt + ass.imm); // 投机执行
+            }
+        }
+        if (ass.type == jal) {
+            pc.SetNext(cur_cnt + ass.imm);
+        }
+        if (ass.type == jalr) {
+            pc.SetNext(cur_cnt);
+        }
+    }
+    else {
+        // Unsuccessful fetch
+        pc.SetNext(pc.GetCounter());
+    }
+}
+void RS::Issue(RegFile &reg,RST &rst,ROB &rob,PC &pc,int ROB_id) {
+    if (!has_append) return;
+    // 这些都是预先存在append里的
+    Assembly ass = append.ass;
+
     if (rob.Full()) {
-        pc.SetNext(pc.GetCounter()); // 停在这一步
+        pc.SetNext(pc.GetCounter()); // jammed
         return;
     }
+    if (ass.type == lb || ass.type == lbu || ass.type == lh || ass.type == lhu
+        || ass.type == lw || ass.type == sb || ass.type == sh || ass.type == sw) {
+        has_append = false;
+        return;
+    }
+
     RSElement cur;
     cur.id = ROB_id; // 分配唯一的标签
     cur.op = ass.type;
-    cur.PC_cur = pc.GetCounter();
-    pc.SetNext(cur.PC_cur + 4);
+    cur.PC_cur = append.pc.GetCounter();
+
     // Arithmetic
     if (ass.type == add || ass.type == sub || ass.type == and_ || ass.type == or_
         || ass.type == xor_ || ass.type == sll || ass.type == srl || ass.type == sra
@@ -93,16 +127,12 @@ void RS::Add(RegFile &reg,Assembly ass,RST &rst,ROB &rob,PC &pc,int ROB_id) {
             cur.data2 = reg.GetData(0,ass.rs2).data2;
         }
         cur.imm = ass.imm;
-        // 投机执行
-        cur.predict = pre;
-        if (pre == StrongJump || pre == WeakJump) {
-            pc.SetNext(cur.PC_cur + ass.imm); // 直接改pc
-        }
+        // 投机执行记录
+        cur.predict = append.pre;
     }
     // Jump And Link
     if (ass.type == jal) {
         cur.has_Vj = cur.has_Vk = true;
-        pc.SetNext(cur.PC_cur + ass.imm);
         cur.des = ass.rd;
         rst.Qi[ass.rd] = cur.id;
     }
@@ -124,11 +154,11 @@ void RS::Add(RegFile &reg,Assembly ass,RST &rst,ROB &rob,PC &pc,int ROB_id) {
         cur.imm = ass.imm;
         cur.des = ass.rd;
         if (cur.has_Vj) {
-            pc.SetNext(cur.data1 + cur.imm);
+            pc.SetNext(cur.data1 + cur.imm); // 修改一下next_step
             rst.Qi[ass.rd] = cur.id;
         }
         else {
-            pc.SetNext(cur.PC_cur); // 停在这一步直到准备好 先不加入RS
+            // 停在这一步直到准备好 先不加入RS
             return;
         }
     }
@@ -145,6 +175,8 @@ void RS::Add(RegFile &reg,Assembly ass,RST &rst,ROB &rob,PC &pc,int ROB_id) {
         cur.imm = ass.imm;
         rst.Qi[ass.rd] = cur.id;
     }
-    // 加入RS
+    // Issue successfully
     waiting[total++] = cur;
+    rob.Add(ass,rst,ROB_id);
+    has_append = false; // delete from append
 }

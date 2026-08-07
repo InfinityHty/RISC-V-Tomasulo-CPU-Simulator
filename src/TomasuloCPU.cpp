@@ -18,10 +18,13 @@ bool TomasuloCPU::Tick() {
     }
     // Instruction Decode
     Assembly assembly_ins = decoder.Decode(binary_ins);
+    // Fetch
+    rs.Fetch(assembly_ins,pc);
+    lsq.Fetch(assembly_ins);
     // Issue
-    rs.Add(reg,assembly_ins,rst,rob,pc,counter);
-    lsq.Add(reg,assembly_ins,rst,rob,pc,counter);
-    rob.Add(assembly_ins,rst,counter);
+    rs.Issue(reg,rst,rob,pc,counter);
+    lsq.Issue(reg,rst,rob,pc,counter);
+    // rob.Add(assembly_ins,rst,counter);
     // Execute
     alu.Execute(rs,cdb,pc);
     agu.Execute(lsq,cdb);
