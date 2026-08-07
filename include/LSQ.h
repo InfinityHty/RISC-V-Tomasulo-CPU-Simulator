@@ -43,7 +43,7 @@ public:
         for (int i = 0; i < total - 1; i++) waiting[i] = waiting[i + 1];
         total--;
     }
-    LSQElement waiting[4096];
+    LSQElement waiting[50000];
     int total;
     struct LastFetch {
         Assembly ass;
